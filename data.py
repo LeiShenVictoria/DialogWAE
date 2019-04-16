@@ -333,6 +333,7 @@ class DailyDialCorpus(object):
         :param path: the folder that contains the SWDA dialog corpus
         """
         train_data = open(path+'train.utts.txt', "r").readlines()
+        # 这里使用的是公开的原始数据，用__eou__分割开不同的utterances
         valid_data = open(path+'valid.utts.txt', "r").readlines()
         test_data = open(path+'test.utts.txt', "r").readlines()
         
@@ -354,12 +355,14 @@ class DailyDialCorpus(object):
         new_dialog = []
         new_utts = []
         bod_utt = ["<s>", "<d>", "</s>"] # indicator of a start of a dialog
+        # 整个bod_utt用来分割不同的dialog/conversation
         all_lenes = []
 
         for l in data:        
             lower_utts = [["<s>"] + nltk.WordPunctTokenizer().tokenize(utt.lower()) + ["</s>"]
                           for utt in l.split('__eou__')[:-1]]
             all_lenes.extend([len(u) for u in lower_utts])
+            # 这里的长度包括了<s>和</s>
             
             dialog = [(bod_utt, 0)]
             floor = 1
@@ -371,12 +374,18 @@ class DailyDialCorpus(object):
 
         print("Max utt len %d, mean utt len %.2f" % (np.max(all_lenes), float(np.mean(all_lenes))))
         return new_dialog, new_utts
+        # new_utts: [['<s>', '<d>', '</s>'], ['<s>', 'say', ',', 'jim', ',', 'how', 'about', 'going', 'for', 'a', 
+        # 'few', 'beers', 'after', 'dinner', '?', '</s>'],...,['<s>', '<d>', '</s>'], ...]
+        
+        # new_dialog:[[(['<s>', '<d>', '</s>'], 0), (['<s>', 'say', ',', 'jim', ',', 'how', 'about', 'going', 'for', 'a', 
+        # 'few', 'beers', 'after', 'dinner', '?', '</s>'], 1), ...], [(['<s>', '<d>', '</s>'], 0)...]
 
     def build_vocab(self, vocab_size):
         all_words = []
         for tokens in self.train_corpus[1]: # utterances
             all_words.extend(tokens)
-        vocab_count = Counter(all_words).most_common()
+        vocab_count = Counter(all_words).most_common() 
+        # 按照降序，返回所有的term,num
         raw_vocab_size = len(vocab_count)
         discard_wc = np.sum([c for t, c, in vocab_count[vocab_size:]])
         vocab_count = vocab_count[0:vocab_size]
@@ -386,14 +395,16 @@ class DailyDialCorpus(object):
               "test size %d raw vocab size %d vocab size %d at cut_off %d OOV rate %f"
               % (len(self.train_corpus), len(self.valid_corpus), len(self.test_corpus),
                  raw_vocab_size, len(vocab_count), vocab_count[-1][1], float(discard_wc) / len(all_words)))
+        #Load corpus with train size 2, valid size 2, test size 2 raw vocab size 17716 vocab size 10000 at 
+        #cut_off 2 OOV rate 0.006757
 
         self.vocab = ["<pad>", "<unk>"] + [t for t, cnt in vocab_count]
         self.ivocab = {t: idx for idx, t in enumerate(self.vocab)}
         self.unk_id = self.ivocab["<unk>"]
         self.sos_id = self.ivocab["<s>"]
         self.eos_id = self.ivocab["</s>"]
-        print("<d> index %d" % self.ivocab["<d>"])
-        print("<sil> index %d" % self.ivocab.get("<sil>", -1))
+        print("<d> index %d" % self.ivocab["<d>"]) #-->21
+        print("<sil> index %d" % self.ivocab.get("<sil>", -1)) #-->-1
 
 
     def load_word2vec(self, word_vec_path):
