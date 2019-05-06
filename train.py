@@ -54,6 +54,8 @@ parser.add_argument('--dataset', type=str, default='SWDA', help='name of dataset
 parser.add_argument('--model', type=str, default='DialogWAE_GMP', help='model name')
 parser.add_argument('--expname', type=str, default='basic', help='experiment name, for disinguishing different parameter settings')
 parser.add_argument('--visual', action='store_true', default=False, help='visualize training status in tensorboard')
+# tensorboard --logdir runs
+# http://localhost:6006
 parser.add_argument('--reload_from', type=int, default=-1, help='reload from a trained ephoch')
 parser.add_argument('--gpu_id', type=int, default=0, help='GPU ID')
 
