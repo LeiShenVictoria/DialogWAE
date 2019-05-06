@@ -25,6 +25,9 @@ class SWDACorpus(object):
         self.train_corpus = self.process(data["train"])
         self.valid_corpus = self.process(data["valid"])
         self.test_corpus = self.process(data["test"])
+        # 下边self.train/valid/test_corpus都是如下格式：接下来self.train_corpus[0][1][2]取各自的内容
+        # """new_dialog: [(a, 1/0), (a,1/0)], new_meta: (a, b, topic), new_utt: [[a,b,c)"""
+        # """ 1 is own utt and 0 is other's utt"""
         self.build_vocab(vocab_size)
         self.load_word2vec(wordvec_path)
         print("Done loading corpus")
