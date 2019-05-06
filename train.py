@@ -170,6 +170,8 @@ for epoch in range(start_epoch, config['epochs']+1):
         batch = train_loader.next_batch()
         if batch is None: # end of epoch
             break
+        ########################################
+        # 一个batch中得到的数据，topic, profil等是没有用的，floor是0(A/1(B
         context, context_lens, utt_lens, floors,_,_,_,response,res_lens,_ = batch
         context, utt_lens = context[:,:,1:], utt_lens-1 # remove the sos token in the context and reduce the context length
         context, context_lens, utt_lens, floors, response, res_lens\
