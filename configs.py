@@ -31,6 +31,7 @@ def config_DialogWAE():
 
 def config_DialogWAE_GMP():
     conf=config_DialogWAE()
+    # 这里包括DialogWAE里的configuration
     conf['n_prior_components']=3  # DailyDial 5 SWDA 3
     conf['gumbel_temp']=0.1
     return conf
