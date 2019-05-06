@@ -130,7 +130,7 @@ vocab = corpus.ivocab
 ivocab = corpus.vocab
 n_tokens = len(ivocab)
 
-metrics=Metrics(corpus.word2vec)
+metrics=Metrics(corpus.word2vec) # 利用glove计算avg, ext, greedy
 
 print("Loaded data!")
 
